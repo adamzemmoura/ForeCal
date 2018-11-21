@@ -12,6 +12,8 @@
 		54EACD5921A4E36300A91EF8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5721A4E36300A91EF8 /* Main.storyboard */; };
 		54EACD5B21A4E37000A91EF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5A21A4E37000A91EF8 /* Assets.xcassets */; };
 		54EACD5E21A4E37000A91EF8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5C21A4E37000A91EF8 /* LaunchScreen.storyboard */; };
+		54EACD6921A4E6CF00A91EF8 /* MonthSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EACD6821A4E6CF00A91EF8 /* MonthSelectionView.swift */; };
+		54EACD6B21A4E73400A91EF8 /* Month.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EACD6A21A4E73400A91EF8 /* Month.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		54EACD5A21A4E37000A91EF8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		54EACD5D21A4E37000A91EF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		54EACD5F21A4E37000A91EF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		54EACD6821A4E6CF00A91EF8 /* MonthSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthSelectionView.swift; sourceTree = "<group>"; };
+		54EACD6A21A4E73400A91EF8 /* Month.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Month.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,14 +58,40 @@
 		54EACD5221A4E36300A91EF8 /* ForeCal */ = {
 			isa = PBXGroup;
 			children = (
+				54EACD6721A4E69700A91EF8 /* Controller */,
+				54EACD6621A4E68C00A91EF8 /* View */,
+				54EACD6521A4E68600A91EF8 /* Model */,
 				54EACD5321A4E36300A91EF8 /* AppDelegate.swift */,
-				54EACD5521A4E36300A91EF8 /* ViewController.swift */,
 				54EACD5721A4E36300A91EF8 /* Main.storyboard */,
 				54EACD5A21A4E37000A91EF8 /* Assets.xcassets */,
 				54EACD5C21A4E37000A91EF8 /* LaunchScreen.storyboard */,
 				54EACD5F21A4E37000A91EF8 /* Info.plist */,
 			);
 			path = ForeCal;
+			sourceTree = "<group>";
+		};
+		54EACD6521A4E68600A91EF8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				54EACD6A21A4E73400A91EF8 /* Month.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		54EACD6621A4E68C00A91EF8 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				54EACD6821A4E6CF00A91EF8 /* MonthSelectionView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		54EACD6721A4E69700A91EF8 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				54EACD5521A4E36300A91EF8 /* ViewController.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +165,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54EACD6B21A4E73400A91EF8 /* Month.swift in Sources */,
 				54EACD5621A4E36300A91EF8 /* ViewController.swift in Sources */,
 				54EACD5421A4E36300A91EF8 /* AppDelegate.swift in Sources */,
+				54EACD6921A4E6CF00A91EF8 /* MonthSelectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,6 +315,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CTK6TLNQSV;
 				INFOPLIST_FILE = ForeCal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -290,7 +323,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adamzemmoura.ForeCal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -301,6 +334,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = CTK6TLNQSV;
 				INFOPLIST_FILE = ForeCal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -308,7 +342,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.adamzemmoura.ForeCal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
