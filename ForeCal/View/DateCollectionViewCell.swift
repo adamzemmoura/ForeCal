@@ -19,8 +19,41 @@ class DateCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func configureForDay(day: Int) {
+    @IBOutlet weak var currentDayHighlightView: UIView! {
+        didSet {
+            currentDayHighlightView.layer.borderWidth = 2
+            currentDayHighlightView.layer.borderColor = UIColor.red.cgColor
+            currentDayHighlightView.layer.cornerRadius = currentDayHighlightView.frame.width / 2
+            currentDayHighlightView.clipsToBounds = true
+            currentDayHighlightView.isHidden = true
+        }
+    }
+    
+    
+    func configureForDay(day: Int, month: Month) {
         dateLabel.text = "\(day)"
+        let dayIsToday = day == Calendar.current.component(.day, from: Date())
+        let currentMonth = month.rawValue == Calendar.current.component(.month, from: Date())
+        shouldHighlightCell(bool: dayIsToday && currentMonth)
+    }
+    
+    private func shouldHighlightCell(bool: Bool) {
+        currentDayHighlightView.isHidden = !bool
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        self.layer.cornerRadius = 5
+        self.clipsToBounds = true
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            
+            self.backgroundColor = isSelected == true ? .blue : .clear
+            self.dateLabel.textColor = isSelected ? .white : .black
+        }
     }
     
 }

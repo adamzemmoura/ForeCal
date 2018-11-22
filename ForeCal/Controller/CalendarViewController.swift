@@ -71,7 +71,7 @@ extension CalendarViewController : UICollectionViewDataSource {
         } else {
             let calculatedDate = indexPath.row - (firstWeekdayOfMonth - 2)
             cell.isHidden = false
-            cell.configureForDay(day: calculatedDate)
+            cell.configureForDay(day: calculatedDate, month: currentMonth)
             
         }
         
@@ -86,6 +86,7 @@ extension CalendarViewController : UICollectionViewDataSource {
 extension CalendarViewController : UICollectionViewDelegate {
     
     
+    
 }
 
 extension CalendarViewController : UICollectionViewDelegateFlowLayout {
@@ -96,16 +97,26 @@ extension CalendarViewController : UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width/7 - 8
-        let height: CGFloat = 40
+        let height: CGFloat = width
         return CGSize(width: width, height: height)
     }
     
 }
 
 extension CalendarViewController : MonthSelectionViewDelegate {
+    
     func monthSelectionViewDidChange(month: Month, year: Int) {
         currentMonth = month
         currentYear = year
+        
+        // allow for leap years
+        if month == .feb {
+            if currentYear % 4 == 0 {
+                numberOfDaysInMonth[month.rawValue - 1] = 29
+            } else {
+                numberOfDaysInMonth[month.rawValue - 1] = 28
+            }
+        }
         
         firstWeekdayOfMonth = getFirstWeekdayOfMonth()
         collectionView.reloadData()
