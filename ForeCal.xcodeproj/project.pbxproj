@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		54E99F6F21A585A8002A1F1D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E99F6E21A585A8002A1F1D /* Extensions.swift */; };
+		54E99F7121A58994002A1F1D /* DateCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54E99F7021A58994002A1F1D /* DateCollectionViewCell.swift */; };
 		54EACD5421A4E36300A91EF8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EACD5321A4E36300A91EF8 /* AppDelegate.swift */; };
-		54EACD5621A4E36300A91EF8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EACD5521A4E36300A91EF8 /* ViewController.swift */; };
+		54EACD5621A4E36300A91EF8 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54EACD5521A4E36300A91EF8 /* CalendarViewController.swift */; };
 		54EACD5921A4E36300A91EF8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5721A4E36300A91EF8 /* Main.storyboard */; };
 		54EACD5B21A4E37000A91EF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5A21A4E37000A91EF8 /* Assets.xcassets */; };
 		54EACD5E21A4E37000A91EF8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 54EACD5C21A4E37000A91EF8 /* LaunchScreen.storyboard */; };
@@ -17,9 +19,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		54E99F6E21A585A8002A1F1D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		54E99F7021A58994002A1F1D /* DateCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateCollectionViewCell.swift; sourceTree = "<group>"; };
 		54EACD5021A4E36300A91EF8 /* ForeCal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ForeCal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		54EACD5321A4E36300A91EF8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		54EACD5521A4E36300A91EF8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		54EACD5521A4E36300A91EF8 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
 		54EACD5821A4E36300A91EF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		54EACD5A21A4E37000A91EF8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		54EACD5D21A4E37000A91EF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -39,6 +43,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		54E99F6D21A58596002A1F1D /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				54E99F6E21A585A8002A1F1D /* Extensions.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		54EACD4721A4E36300A91EF8 = {
 			isa = PBXGroup;
 			children = (
@@ -58,6 +70,7 @@
 		54EACD5221A4E36300A91EF8 /* ForeCal */ = {
 			isa = PBXGroup;
 			children = (
+				54E99F6D21A58596002A1F1D /* Helpers */,
 				54EACD6721A4E69700A91EF8 /* Controller */,
 				54EACD6621A4E68C00A91EF8 /* View */,
 				54EACD6521A4E68600A91EF8 /* Model */,
@@ -82,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				54EACD6821A4E6CF00A91EF8 /* MonthSelectionView.swift */,
+				54E99F7021A58994002A1F1D /* DateCollectionViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -89,7 +103,7 @@
 		54EACD6721A4E69700A91EF8 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				54EACD5521A4E36300A91EF8 /* ViewController.swift */,
+				54EACD5521A4E36300A91EF8 /* CalendarViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -165,9 +179,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				54E99F6F21A585A8002A1F1D /* Extensions.swift in Sources */,
 				54EACD6B21A4E73400A91EF8 /* Month.swift in Sources */,
-				54EACD5621A4E36300A91EF8 /* ViewController.swift in Sources */,
+				54EACD5621A4E36300A91EF8 /* CalendarViewController.swift in Sources */,
 				54EACD5421A4E36300A91EF8 /* AppDelegate.swift in Sources */,
+				54E99F7121A58994002A1F1D /* DateCollectionViewCell.swift in Sources */,
 				54EACD6921A4E6CF00A91EF8 /* MonthSelectionView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
