@@ -1,6 +1,6 @@
 //
 //  MonthSelectionView.swift
-//  ForeCal
+//  Tiempo
 //
 //  Created by Adam Zemmoura on 21/11/2018.
 //  Copyright © 2018 Adam Zemmoura. All rights reserved.
