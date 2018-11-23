@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DateCollectionViewCell" customModule="ForeCal" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygc-e8-Hwb">
+                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <viewLayoutGuide key="safeArea" id="Qkx-LQ-HnH"/>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="☀️" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fgZ-fG-b0O">
+                    <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="3cs-Io-QoT">
+                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="20"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="3cs-Io-QoT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="6gS-Be-L4e"/>
+                <constraint firstAttribute="trailing" secondItem="3cs-Io-QoT" secondAttribute="trailing" id="6oS-vM-Lj2"/>
+                <constraint firstItem="fgZ-fG-b0O" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="JJ4-Nd-Bqz"/>
+                <constraint firstItem="ygc-e8-Hwb" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="MGU-3J-eLB"/>
+                <constraint firstItem="fgZ-fG-b0O" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" multiplier="0.5" id="T4x-4h-Fhd"/>
+                <constraint firstItem="3cs-Io-QoT" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Tnf-2g-FD9"/>
+                <constraint firstItem="ygc-e8-Hwb" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="cta-Xc-aLl"/>
+                <constraint firstItem="ygc-e8-Hwb" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="fcd-aW-lxk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="3cs-Io-QoT" secondAttribute="bottom" id="gCj-1B-p1a"/>
+                <constraint firstItem="ygc-e8-Hwb" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="jHg-3R-tpZ"/>
+                <constraint firstItem="fgZ-fG-b0O" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.5" id="lKO-am-7Fe"/>
+                <constraint firstItem="fgZ-fG-b0O" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="zhf-Kl-myE"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <connections>
+                <outlet property="currentDayHighlightView" destination="ygc-e8-Hwb" id="o6P-yc-ZlF"/>
+                <outlet property="dateLabel" destination="3cs-Io-QoT" id="GUC-4T-lnN"/>
+                <outlet property="weatherIconLabel" destination="fgZ-fG-b0O" id="4on-T6-qWR"/>
+            </connections>
+            <point key="canvasLocation" x="32" y="-58"/>
+        </view>
+    </objects>
+</document>

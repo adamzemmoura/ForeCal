@@ -10,14 +10,11 @@ import UIKit
 
 class DateCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var dateLabel: UILabel! {
-        didSet {
-            dateLabel.topAnchor.constraint(equalTo: topAnchor).isActive=true
-            dateLabel.leftAnchor.constraint(equalTo: leftAnchor).isActive=true
-            dateLabel.rightAnchor.constraint(equalTo: rightAnchor).isActive=true
-            dateLabel.bottomAnchor.constraint(equalTo: bottomAnchor).isActive=true
-        }
-    }
+    @IBOutlet weak var dateLabel: UILabel!
+    
+    let weatherIcons : [String] = ["☀️", "🌤","☁️","🌦","❄️","☔️","⚡️"]
+    
+    @IBOutlet weak var weatherIconLabel: UILabel!
     
     @IBOutlet weak var currentDayHighlightView: UIView! {
         didSet {
@@ -35,10 +32,15 @@ class DateCollectionViewCell: UICollectionViewCell {
         let dayIsToday = day == Calendar.current.component(.day, from: Date())
         let currentMonth = month.rawValue == Calendar.current.component(.month, from: Date())
         shouldHighlightCell(bool: dayIsToday && currentMonth)
+        
+        // test code to set randon weather icon
+        let randomIcon = weatherIcons[Int(arc4random_uniform(UInt32(weatherIcons.count)))]
+        weatherIconLabel.text = randomIcon
+        
     }
     
     private func shouldHighlightCell(bool: Bool) {
-        currentDayHighlightView.isHidden = !bool
+        if bool { dateLabel.textColor = .red }
     }
     
     override func awakeFromNib() {
@@ -46,6 +48,7 @@ class DateCollectionViewCell: UICollectionViewCell {
         
         self.layer.cornerRadius = 5
         self.clipsToBounds = true
+        
     }
     
     override var isSelected: Bool {
