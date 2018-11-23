@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:ForeCal.xcodeproj">
+      location = "self:/Users/adamzemmoura/dev/ios/ForeCal/Tiempo.xcodeproj">
    </FileRef>
 </Workspace>
