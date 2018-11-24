@@ -15,7 +15,13 @@ class CalendarViewController: UIViewController {
     private var currentYear = 0
     private var day = 0
     private var firstWeekdayOfMonth = 0
+    private var weeklyWeatherForecast : [Int : WeatherDataToday] = [:] { // contains the weather for the next 7 days, key is the day in this month ie. 3 for 3rd
+        didSet {
+            collectionView.reloadData()
+        }
+    }
     
+    private let weatherData : WeatherDataServiceProtocol = DarkSkyWeatherAPIClient.shared
     
     @IBOutlet weak var collectionView: UICollectionView! {
         didSet {
@@ -30,6 +36,12 @@ class CalendarViewController: UIViewController {
         }
     }
     
+    
+    @IBOutlet weak var weatherForecaseTitleLabel: UILabel!
+    @IBOutlet weak var weatherForecastInfoLabel: UILabel!
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -40,6 +52,36 @@ class CalendarViewController: UIViewController {
         day = calendar.component(.day, from: now)
         firstWeekdayOfMonth = getFirstWeekdayOfMonth()
     
+        // code to test the DarkSkyWeatherAPI module
+        DarkSkyWeatherAPIClient.shared.getWeeklyForecastForLocation(lat: 41.3851, long: 2.1734) { (weeklyWeatherData) in
+            
+            // make sure we're on the main thread for UI updates
+            DispatchQueue.main.async {
+                let days = weeklyWeatherData.data
+                
+                for day in days {
+                    print(day.time)
+                    
+                    // get the current day (as an int) to use as a key
+                    let key = Calendar.current.component(.day, from: day.time)
+                    self.weeklyWeatherForecast[key] = day
+                    
+                    print("Key is :", key)
+                    
+                    if let iconDesc = day.icon {
+                        if let icon = WeatherIcon(rawValue: iconDesc)?.image {
+                            print(icon)
+                        }
+                    }
+                }
+                
+                // get the weekly weather summary text if there is any
+                if let weeklyWeatherSummary = weeklyWeatherData.summary {
+                    self.weatherForecastInfoLabel.text = weeklyWeatherSummary
+                }
+            }
+    
+        }
     }
     
     private func getFirstWeekdayOfMonth() -> Int {
@@ -72,8 +114,27 @@ extension CalendarViewController : UICollectionViewDataSource {
         } else {
             let calculatedDate = indexPath.row - (firstWeekdayOfMonth - 2)
             cell.isHidden = false
-            cell.configureForDay(day: calculatedDate, month: currentMonth)
             
+            // check whether it's this month in which case pass current weather icon for next 7 days
+            let thisMonth = Month(rawValue: Calendar.current.component(.month, from: Date()))!
+            if currentMonth == thisMonth  {
+                if weeklyWeatherForecast[calculatedDate] != nil {
+                    
+                    // check if there is weather icon description and if so attempt to create a weather icon for it
+                    if let iconDesc = weeklyWeatherForecast[calculatedDate]!.icon {
+                        if let icon = WeatherIcon(rawValue: iconDesc)?.image {
+                            cell.configureForDay(day: calculatedDate, month: currentMonth, weatherIcon: icon)
+                        }
+                    }
+                    // no weather icon data so just configure the date cell normally
+                    else {
+                        cell.configureForDay(day: calculatedDate, month: currentMonth)
+                    }
+                }
+            }
+            else {
+                cell.configureForDay(day: calculatedDate, month: currentMonth)
+            }
         }
         
         return cell

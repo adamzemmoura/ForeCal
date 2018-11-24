@@ -12,8 +12,6 @@ class DateCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var dateLabel: UILabel!
     
-    let weatherIcons : [String] = ["☀️", "🌤","☁️","🌦","❄️","☔️","⚡️"]
-    
     @IBOutlet weak var weatherIconLabel: UILabel!
     
     @IBOutlet weak var currentDayHighlightView: UIView! {
@@ -27,15 +25,15 @@ class DateCollectionViewCell: UICollectionViewCell {
     }
     
     
-    func configureForDay(day: Int, month: Month) {
+    func configureForDay(day: Int, month: Month, weatherIcon: String? = nil) {
+        
         dateLabel.text = "\(day)"
         let dayIsToday = day == Calendar.current.component(.day, from: Date())
         let currentMonth = month.rawValue == Calendar.current.component(.month, from: Date())
         shouldHighlightCell(bool: dayIsToday && currentMonth)
         
-        // test code to set randon weather icon
-        let randomIcon = weatherIcons[Int(arc4random_uniform(UInt32(weatherIcons.count)))]
-        weatherIconLabel.text = randomIcon
+        weatherIconLabel.text = ""
+        weatherIconLabel.text = weatherIcon
         
     }
     
