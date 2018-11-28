@@ -10,63 +10,160 @@ import UIKit
 
 class CalendarViewController: UIViewController {
     
-    private var numberOfDaysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
-    private var currentMonth : Month = .jan
-    private var currentYear = 0
-    private var day = 0
-    private var firstWeekdayOfMonth = 0
-    private var weeklyWeatherForecast : [Int : WeatherDataToday] = [:] { // contains the weather for the next 7 days, key is the day in this month ie. 3 for 3rd
-        didSet {
-            collectionView.reloadData()
+    private var startOfCurrentMonth : Date = {
+        return Date().firstOfMonth()
+    }()
+    
+    private var numberOfDaysInMonth : Int {
+        get {
+            let dayRangeForMonth = Calendar.current.range(of: .day, in: .month, for: startOfCurrentMonth)!
+            return dayRangeForMonth.upperBound - 1
         }
     }
     
+    private var firstWeekdayInMonth : Int {
+        get {
+            return startOfCurrentMonth.weekday
+        }
+    }
+    
+    private var today : Date {
+        get {
+            return Date()
+        }
+    }
+    
+    private var daysInMonthCollectionViewData : [Date?] {
+        get {
+            var data : [Date?] = []
+            for _ in 1..<firstWeekdayInMonth {
+                data.append(nil)
+            }
+            for dayIncrement in 0..<numberOfDaysInMonth {
+                let date : Date = dayIncrement == 0 ? startOfCurrentMonth : Calendar.current.date(byAdding: .day, value: dayIncrement, to: startOfCurrentMonth)!
+                data.append(date)
+            }
+            return data
+        }
+    }
+    
+    private var weatherDataForNextSevenDays : [Date : WeatherDataForDay] = [:] {
+        didSet {
+            updateUI()
+        }
+    }
+
     private let weatherData : WeatherDataServiceProtocol = DarkSkyWeatherAPIClient.shared
     
+    private var calendarOrWeatherDetailView: CalendarOrWeatherDetailView = {
+        return UINib(nibName: "CalendarOrWeatherDetailView", bundle: Bundle.main).instantiate(withOwner: self, options: nil).first! as! CalendarOrWeatherDetailView
+    }()
+    
+    
+    // MARK:- IBOutlets
+    
+    // Month Selection View
+    @IBOutlet weak var monthYearLabel: UILabel!
+    @IBOutlet weak var leftButton: UIButton!
+    @IBOutlet weak var rightButton: UIButton!
+
     @IBOutlet weak var collectionView: UICollectionView! {
         didSet {
+            collectionView.delegate = self
+            collectionView.dataSource = self 
             collectionView.allowsMultipleSelection = false
             collectionView.register(UINib(nibName: "DateCollectionViewCell", bundle: Bundle.main), forCellWithReuseIdentifier: "dateCell")
         }
     }
     
-    @IBOutlet weak var monthSelectionView: MonthSelectionView! {
+    
+    @IBOutlet weak var weatherOrCalendarScrollview: UIScrollView! {
         didSet {
-            monthSelectionView.delegate = self
+            weatherOrCalendarScrollview.showsHorizontalScrollIndicator = false
+            weatherOrCalendarScrollview.isScrollEnabled = true
+            weatherOrCalendarScrollview.isPagingEnabled = true
+            weatherOrCalendarScrollview.delegate = self
         }
     }
     
+    @IBOutlet weak var weatherOrCalendarPageControlView: UIPageControl!
     
-    @IBOutlet weak var weatherForecaseTitleLabel: UILabel!
-    @IBOutlet weak var weatherForecastInfoLabel: UILabel!
+
+    // MARK:- IBActions
+    @IBAction func rightButtonDidPress() {
+        adjustMonthBy(value: 1)
+    }
     
+    @IBAction func leftButtonDidPress() {
+        adjustMonthBy(value: -1)
+    }
     
+    private func adjustMonthBy(value: Int) {
+        
+        let newMonth = Calendar.current.date(byAdding: .month, value: value, to: startOfCurrentMonth)!
+        startOfCurrentMonth = newMonth
+        
+        monthYearLabel.text = startOfCurrentMonth.stringWith(format: "MMMM yyyy")
+        
+        updateUI()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let now = Date()
-        let calendar = Calendar.current
-        currentMonth = Month(rawValue: calendar.component(.month, from: now))!
-        currentYear = calendar.component(.year, from: now)
-        day = calendar.component(.day, from: now)
-        firstWeekdayOfMonth = getFirstWeekdayOfMonth()
+        print("Day from current month : ", Calendar.current.component(.day, from: startOfCurrentMonth))
+        print("Month from current month : ", Calendar.current.component(.month, from: startOfCurrentMonth))
+        print("Year from current month : ", Calendar.current.component(.year, from: startOfCurrentMonth))
+        print("Weekday from current month : ", Calendar.current.component(.weekday, from: startOfCurrentMonth))
+        
+        print("Current month : ", startOfCurrentMonth)
+        print("Number of days in month : ", numberOfDaysInMonth)
+        print("First weekday of month : ", firstWeekdayInMonth)
+        
+        getWeatherDataForNextWeek()
+        updateUI()
+    }
     
-        // code to test the DarkSkyWeatherAPI module
-        DarkSkyWeatherAPIClient.shared.getWeeklyForecastForLocation(lat: 41.3851, long: 2.1734) { (weeklyWeatherData) in
+    private func updateUI() {
+        monthYearLabel.text = startOfCurrentMonth.stringWith(format: "MMMM yyyy")
+        collectionView.reloadData()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        setupScrollView()
+    }
+    
+    private func setupScrollView() {
+        
+        let contentSize = CGSize(width: weatherOrCalendarScrollview.frame.width * 2.0,
+                                 height: weatherOrCalendarScrollview.frame.height)
+        weatherOrCalendarScrollview.contentSize = contentSize
+        weatherOrCalendarScrollview.addSubview(self.calendarOrWeatherDetailView)
+        calendarOrWeatherDetailView.frame = CGRect(origin: .zero, size: contentSize)
+        
+        // set up correct number of segements on pageControlView
+        weatherOrCalendarPageControlView.numberOfPages = 2
+        
+    }
+    
+    
+    private func getWeatherDataForNextWeek() {
+        // code to test the DarkSkyWeatherAPI module -- set to Barcelona 
+        DarkSkyWeatherAPIClient.shared.getWeeklyForecastForLocation(lat: 41.3851, long: 2.1734) { (weatherDataForWeek) in
             
             // make sure we're on the main thread for UI updates
             DispatchQueue.main.async {
-                let days = weeklyWeatherData.data
+                let week = weatherDataForWeek.data
                 
-                for day in days {
-                    print(day.time)
+                for day in week {
+                    let timeIntervalSince1970 = day.time
+                    let key = Date(timeIntervalSince1970: timeIntervalSince1970).startOfDay()
                     
-                    // get the current day (as an int) to use as a key
-                    let key = Calendar.current.component(.day, from: day.time)
-                    self.weeklyWeatherForecast[key] = day
+                    print("key in dict : ", key)
                     
-                    print("Key is :", key)
+                    self.weatherDataForNextSevenDays[key] = day
                     
                     if let iconDesc = day.icon {
                         if let icon = WeatherIcon(rawValue: iconDesc)?.image {
@@ -76,111 +173,116 @@ class CalendarViewController: UIViewController {
                 }
                 
                 // get the weekly weather summary text if there is any
-                if let weeklyWeatherSummary = weeklyWeatherData.summary {
-                    self.weatherForecastInfoLabel.text = weeklyWeatherSummary
-                }
+//                if let weeklyWeatherSummary = weatherDataForWeek.summary {
+//                    self.weatherForecastInfoLabel.text = weeklyWeatherSummary
+//                }
             }
-    
+            
         }
     }
-    
-    private func getFirstWeekdayOfMonth() -> Int {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        let firstDayOfMonth = Calendar.current.firstWeekday
-        //let firstDayOfMonth = formatter.date(from: "\(currentYear)-\(currentMonth.rawValue)-01")!
-        print("first day of the month : \(firstDayOfMonth)")
-        
-        print("current month : \(currentMonth.rawValue)")
-        let firstWeekdayOfMonth = ("\(currentYear)-\(currentMonth.rawValue)-01".date?.firstDayOfTheMonth.weekday)!
-        print("First weekday of the month : \(firstWeekdayOfMonth)")
-        return firstWeekdayOfMonth
-    }
 
+    
 }
 
 extension CalendarViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return numberOfDaysInMonth[currentMonth.rawValue - 1] + (firstWeekdayOfMonth - 1)
+        
+        // the number of days in the month + the number of weekdays to the first day in the month
+        let numberOfWeekDaysBeforeFirstDayOfMonth = firstWeekdayInMonth - 1
+        
+        //return numberOfDaysInMonth[startOfCurrentMonth.rawValue - 1] + (firstWeekdayOfMonth - 1)
+        return numberOfDaysInMonth + numberOfWeekDaysBeforeFirstDayOfMonth
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "dateCell", for: indexPath) as! DateCollectionViewCell
-        
-        if indexPath.item <= firstWeekdayOfMonth - 2 {
+
+        if indexPath.item <= firstWeekdayInMonth - 2 {
             cell.isHidden = true
-        } else {
-            let calculatedDate = indexPath.row - (firstWeekdayOfMonth - 2)
+        }
+        else {
+            
+            // check whether there is a date in the collection view data (there always should be)
+            let date = daysInMonthCollectionViewData[indexPath.row]!
             cell.isHidden = false
             
-            // check whether it's this month in which case pass current weather icon for next 7 days
-            let thisMonth = Month(rawValue: Calendar.current.component(.month, from: Date()))!
-            if currentMonth == thisMonth  {
-                if weeklyWeatherForecast[calculatedDate] != nil {
-                    
-                    // check if there is weather icon description and if so attempt to create a weather icon for it
-                    if let iconDesc = weeklyWeatherForecast[calculatedDate]!.icon {
-                        if let icon = WeatherIcon(rawValue: iconDesc)?.image {
-                            cell.configureForDay(day: calculatedDate, month: currentMonth, weatherIcon: icon)
-                        }
-                    }
-                    // no weather icon data so just configure the date cell normally
-                    else {
-                        cell.configureForDay(day: calculatedDate, month: currentMonth)
-                    }
-                }
+            // check whether there is an entry in the weatherDataForNextSevenDays ie. there is some weather forecast data and if so pass it to the cell
+            if let weatherForecastData = weatherDataForNextSevenDays[date] {
+                cell.configureForDate(date: date, weatherData: weatherForecastData)
             }
             else {
-                cell.configureForDay(day: calculatedDate, month: currentMonth)
+                cell.configureForDate(date: date)
             }
+            
         }
-        
+
         return cell
     }
-    
-    
-    
-    
 }
 
 extension CalendarViewController : UICollectionViewDelegate {
     
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // use the indexPath.row to look up the CollectionViewCellData array for the corresponding date
+        guard let selectedDate = daysInMonthCollectionViewData[indexPath.row] else { return }
+        
+        // check for weather data associated with the date
+        if let weatherData = weatherDataForNextSevenDays[selectedDate] {
+            calendarOrWeatherDetailView.configureWithWeatherData(weatherData: weatherData)
+        }
+        else {
+            calendarOrWeatherDetailView.configureWithoutWeatherData()
+        }
+    }
     
 }
 
 extension CalendarViewController : UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 8.0
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = collectionView.frame.width/7 - 8
-        let height: CGFloat = width
+        
+        let height: CGFloat = collectionView.bounds.height / 5
+        let width = height
+        
         return CGSize(width: width, height: height)
     }
     
 }
 
-extension CalendarViewController : MonthSelectionViewDelegate {
+extension CalendarViewController : UIScrollViewDelegate {
     
-    func monthSelectionViewDidChange(month: Month, year: Int) {
-        currentMonth = month
-        currentYear = year
-        
-        // allow for leap years
-        if month == .feb {
-            if currentYear % 4 == 0 {
-                numberOfDaysInMonth[month.rawValue - 1] = 29
-            } else {
-                numberOfDaysInMonth[month.rawValue - 1] = 28
-            }
-        }
-        
-        firstWeekdayOfMonth = getFirstWeekdayOfMonth()
-        collectionView.reloadData()
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let currentPage = round(scrollView.contentOffset.x / scrollView.contentSize.width)
+        weatherOrCalendarPageControlView.currentPage = Int(currentPage)
     }
+    
 }
+
+//extension CalendarViewController : MonthSelectionViewDelegate {
+    
+//    func monthSelectionViewDidChange(month: Month, year: Int) {
+//        startOfCurrentMonth = month
+//        currentYear = year
+//
+//        // allow for leap years
+//        if month == .feb {
+//            if currentYear % 4 == 0 {
+//                numberOfDaysInMonth[month.rawValue - 1] = 29
+//            } else {
+//                numberOfDaysInMonth[month.rawValue - 1] = 28
+//            }
+//        }
+//
+//        firstWeekdayOfMonth = getFirstWeekdayOfMonth()
+//        collectionView.reloadData()
+//    }
+//}

@@ -24,15 +24,18 @@ class DateCollectionViewCell: UICollectionViewCell {
         }
     }
     
-    
-    func configureForDay(day: Int, month: Month, weatherIcon: String? = nil) {
+    func configureForDate(date: Date?, weatherData: WeatherDataForDay? = nil) {
         
-        dateLabel.text = "\(day)"
-        let dayIsToday = day == Calendar.current.component(.day, from: Date())
-        let currentMonth = month.rawValue == Calendar.current.component(.month, from: Date())
-        shouldHighlightCell(bool: dayIsToday && currentMonth)
-        
+        dateLabel.text = ""
         weatherIconLabel.text = ""
+        
+        if let date = date {
+            dateLabel.text = String(Calendar.current.component(.day, from: date))
+            let dayIsToday = Calendar.current.isDateInToday(date)
+            shouldHighlightCell(bool: dayIsToday)
+        }
+        
+        let weatherIcon = weatherData?.icon != nil ? WeatherIcon(rawValue: weatherData!.icon!)!.image : ""
         weatherIconLabel.text = weatherIcon
         
     }

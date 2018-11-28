@@ -10,8 +10,8 @@ import Foundation
 
 protocol WeatherDataServiceProtocol {
     func getAllWeatherForLocation(lat: Double, long: Double, completion: @escaping (WeatherDataService) -> ())
-    func getWeeklyForecastForLocation(lat: Double, long: Double, completion: @escaping (WeatherDataWeekly) -> ())
-    func getTodaysForecastForLocation(lat: Double, long: Double, day: Date, completion: @escaping (WeatherDataToday) -> ())
+    func getWeeklyForecastForLocation(lat: Double, long: Double, completion: @escaping (WeatherDataForWeek) -> ())
+    func getTodaysForecastForLocation(lat: Double, long: Double, day: Date, completion: @escaping (WeatherDataForDay) -> ())
 }
 
 class DarkSkyWeatherAPIClient {
@@ -22,9 +22,7 @@ class DarkSkyWeatherAPIClient {
     
     private lazy var base_url : URL = URL(string: "https://api.darksky.net/forecast/\(apiKey)/")!
     
-    
-    
-    //https://api.darksky.net/forecast/a030e4e81c219e3867e60cd8d3306561/41.3851,2.1734
+
     
     private init() {}
     
@@ -32,16 +30,17 @@ class DarkSkyWeatherAPIClient {
     func getWeatherDataForLocation(lat : Double, long : Double, completion: @escaping (WeatherDataService) -> ()) {
         
         // create the url for the api
-        let url = base_url.appendingPathComponent("\(lat),\(long)")
-        
+        var url = base_url.appendingPathComponent("\(lat),\(long)")
+        let excludeQueryItem = URLQueryItem(name: "exclude", value: "minutely,hourly,alerts,flags")
+        let unitQueryItem = URLQueryItem(name: "units", value: "auto")
+        let queryItems : [URLQueryItem] = [excludeQueryItem, unitQueryItem]
+        var components = URLComponents(string: url.absoluteString)
+        components?.queryItems = queryItems
+        url = components!.url!
         print(url)
         
         // call the api service using networking
-        var request = URLRequest(url: url)
-        
-        // exclude data blocks not required ; minutely, hourly, alerts & flags.
-        let blocksToExclude = "[minutely,hourly,alerts,flags]"
-        request.addValue(blocksToExclude, forHTTPHeaderField: "exclude")
+        let request = URLRequest(url: url)
         
         let session = URLSession.shared.dataTask(with: request) { (data, response, error) in
             
@@ -83,7 +82,7 @@ extension DarkSkyWeatherAPIClient : WeatherDataServiceProtocol {
         }
     }
     
-    func getWeeklyForecastForLocation(lat: Double, long: Double, completion: @escaping (WeatherDataWeekly) -> ()) {
+    func getWeeklyForecastForLocation(lat: Double, long: Double, completion: @escaping (WeatherDataForWeek) -> ()) {
         
         getWeatherDataForLocation(lat: lat, long: long) { (weatherDataService) in
             if let weeklyData = weatherDataService.daily {
@@ -93,10 +92,10 @@ extension DarkSkyWeatherAPIClient : WeatherDataServiceProtocol {
         
     }
     
-    func getTodaysForecastForLocation(lat: Double, long: Double, day: Date, completion: @escaping (WeatherDataToday) -> ()) {
+    func getTodaysForecastForLocation(lat: Double, long: Double, day: Date, completion: @escaping (WeatherDataForDay) -> ()) {
         getWeatherDataForLocation(lat: lat, long: long) { (weatherDataService) in
-            if let weatherDataToday = weatherDataService.currently {
-                completion(weatherDataToday)
+            if let WeatherDataForDay = weatherDataService.currently {
+                completion(WeatherDataForDay)
             }
         }
     }
@@ -110,39 +109,59 @@ struct WeatherDataService : Codable {
     let latitude : Double
     let longitude : Double
     let timezone : String
-    let currently : WeatherDataToday? // the weather right now
-    //let hourly : WeatherDataWeekly? // weather data, hour-by-hour for the next 48hrs
-    let daily : WeatherDataWeekly? // weather data, day-by-day for the week
+    let currently : WeatherDataForDay? // the weather right now
+    //let hourly : WeatherDataForWeek? // weather data, hour-by-hour for the next 48hrs
+    let daily : WeatherDataForWeek? // weather data, day-by-day for the week
     
 }
 
-struct WeatherDataWeekly : Codable {
+struct WeatherDataForWeek : Codable {
     
     let summary : String?
     let icon : String?
-    let data : [WeatherDataToday]
+    let data : [WeatherDataForDay]
     
 }
 
-struct WeatherDataToday : Codable {
+struct WeatherDataForDay : Codable {
     
-    let time : Date
+    let time : Double
     let summary : String?
     let icon : String?
+    let sunriseTime : Double?
+    let sunsetTime : Double?
+    let moonPhase : Double?
     let precipIntensity : Double?
+    let precipIntensityMax : Double?
+    let precipIntensityMaxTime : Double?
     let precipProbability: Double?
-    let temperature : Double?
-    let apparentTemperature : Double?
+    let temperatureHigh : Double?
+    let temperatureHighTime : Double?
+    let temperatureLow : Double?
+    let temperatureLowTime : Double?
+    let apparentTemperatureHigh : Double?
+    let apparentTemperatureHighTime : Double?
+    let apparentTemperatureLow : Double?
+    let apparentTemperatureLowTime : Double?
+    let temperatureMin : Double?
+    let temperatureMinTime : Double?
+    let temperatureMax : Double?
+    let temperatureMaxTime : Double?
+    let apparentTemperatureMin : Double?
+    let apparentTemperatureMinTime : Double?
+    let apparentTemperatureMax : Double?
+    let apparentTemperatureMaxTime : Double?
     let dewPoint : Double?
     let humidity : Double?
     let pressure : Double?
     let windSpeed : Double?
     let windGust : Double?
+    let windGustTime : Double?
     let windBearing : Double?
     let cloudCover : Double?
     let uvIndex : Double?
+    let uvIndexTime : Double?
     let visibility : Double?
     let ozone : Double?
-    
     
 }

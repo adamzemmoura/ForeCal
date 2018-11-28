@@ -35,7 +35,7 @@ enum WeatherIcon: String {
                 case .fog: return "🌫"
                 case .cloudy: return "☁️"
                 case .partlyCloudyDay: return "🌤"
-                case .partlyCloudyNight: return "🌗"
+                case .partlyCloudyNight: return "☁️"
                 case .hail: return "🌨"
                 case .thunderstorm: return "⛈"
                 case .tornado: return "🌪"
