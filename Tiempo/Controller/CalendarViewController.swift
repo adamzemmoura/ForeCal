@@ -150,35 +150,48 @@ class CalendarViewController: UIViewController {
     
     
     private func getWeatherDataForNextWeek() {
-        // code to test the DarkSkyWeatherAPI module -- set to Barcelona 
-        DarkSkyWeatherAPIClient.shared.getWeeklyForecastForLocation(lat: 41.3851, long: 2.1734) { (weatherDataForWeek) in
+        
+        // get lat and long using GeolocationManger
+        let geoManager = GeolocationManager.shared
+        geoManager.delegate = self
+        
+        geoManager.getCurrentLocation { location, city in
             
-            // make sure we're on the main thread for UI updates
-            DispatchQueue.main.async {
-                let week = weatherDataForWeek.data
+            print("location from callback to get current location is : ", location)
+            print("city name is : ", city)
+            
+            // code to test the DarkSkyWeatherAPI module -- set to Barcelona
+            DarkSkyWeatherAPIClient.shared.getWeeklyForecastForLocation(lat: location.latitude, long: location.longitude) { (weatherDataForWeek) in
                 
-                for day in week {
-                    let timeIntervalSince1970 = day.time
-                    let key = Date(timeIntervalSince1970: timeIntervalSince1970).startOfDay()
+                // make sure we're on the main thread for UI updates
+                DispatchQueue.main.async {
+                    let week = weatherDataForWeek.data
                     
-                    print("key in dict : ", key)
-                    
-                    self.weatherDataForNextSevenDays[key] = day
-                    
-                    if let iconDesc = day.icon {
-                        if let icon = WeatherIcon(rawValue: iconDesc)?.image {
-                            print(icon)
+                    for day in week {
+                        let timeIntervalSince1970 = day.time
+                        let key = Date(timeIntervalSince1970: timeIntervalSince1970).startOfDay()
+                        
+                        print("key in dict : ", key)
+                        
+                        self.weatherDataForNextSevenDays[key] = day
+                        
+                        if let iconDesc = day.icon {
+                            if let icon = WeatherIcon(rawValue: iconDesc)?.image {
+                                print(icon)
+                            }
                         }
                     }
+                    
+                    // get the weekly weather summary text if there is any
+                    //                if let weeklyWeatherSummary = weatherDataForWeek.summary {
+                    //                    self.weatherForecastInfoLabel.text = weeklyWeatherSummary
+                    //                }
                 }
                 
-                // get the weekly weather summary text if there is any
-//                if let weeklyWeatherSummary = weatherDataForWeek.summary {
-//                    self.weatherForecastInfoLabel.text = weeklyWeatherSummary
-//                }
             }
-            
         }
+        
+        
     }
 
     
@@ -263,6 +276,14 @@ extension CalendarViewController : UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let currentPage = round(scrollView.contentOffset.x / scrollView.contentSize.width)
         weatherOrCalendarPageControlView.currentPage = Int(currentPage)
+    }
+    
+}
+
+extension CalendarViewController : GeolocationManagerDelegate {
+    
+    func geolocationManagerDidUpdateWithLocation(location: Coordinate) {
+        print("Did update with location : ", location)
     }
     
 }
